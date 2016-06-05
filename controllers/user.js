@@ -10,7 +10,7 @@ exports.list = function *(){
     let page = this.query.page || 1;
     let limit = 10;
     let skip = (page-1)*limit;
-    this.body = yield UserModel.find({}, null, {skip: skip, limit: limit});
+    this.body = yield UserModel.find().skip(skip).limit(limit);
 };
 
 //插入一条新数据，实际应用中应该读取客户端POST数据，本示例仅仅模拟
