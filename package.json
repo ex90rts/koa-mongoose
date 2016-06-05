@@ -1,0 +1,28 @@
+{
+  "name": "koa-mongoose",
+  "version": "1.0.0",
+  "description": "Koa and Mongoose Example",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/ex90rts/koa-mongoose.git"
+  },
+  "keywords": [
+    "koa",
+    "mongodb",
+    "mongoose"
+  ],
+  "author": "ex90rts",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/ex90rts/koa-mongoose/issues"
+  },
+  "dependencies": {
+    "koa": "^1.2.0",
+    "koa-route": "^2.4.2",
+    "mongoose": "^4.4.19"
+  }
+}
