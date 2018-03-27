@@ -7,8 +7,7 @@ const koa = require('koa');
 const route = require('koa-route');
 const mongoose = require('mongoose');
 
-// 引入controller层，PS：本例重点不在koa，因此view层不做
-// 实现，controller层均输出json数据
+// import controllers, P.S.: the purpose of this demo is not about koa, so I just skipped the 'view' layer
 const indexController = require('./controllers/index');
 const userController = require('./controllers/user');
 
@@ -18,8 +17,8 @@ app.on('error', function(err){
     console.log(err.message);
 });
 
-// 路由配置，注意：/user/insert 和 /user/hire 在真实环境应该改为 route.post
-// 切需要引入co-body中间件
+// route configuration. Attention: /user/insert and /user/hire should changed to route.post 
+// in the real project and you need to import co-body middleware as while
 app.use(route.get('/', indexController.index));
 app.use(route.get('/user/list', userController.list));
 app.use(route.get('/user/insert', userController.insert));
@@ -29,30 +28,32 @@ app.use(route.get('/user/editors/type/:type', userController.typeEditors));
 app.use(route.get('/user/hired', userController.hired));
 app.use(route.get('/user/hire/:username', userController.hire));
 
-// 启动服务，监听3000端口
+// start the server, listen to port 3000
 app.listen(3000, ()=>{console.log('Server started, please visit: http://127.0.0.1:6000');});
 
-// 以下MongoDB连接相关代码页可以独立出去，这里偷懒了
-// 连接MongoDB, 在生产环境应该禁用autoIndex，因为会造成性能问题
+// the following code are about connection to MongoDb, you probably should isolate these code
+// to an independent file, while I just too lazy to do it ;）
+
+// connect to MongoDB, you should disable autoIndex in production env for performance reason
 const connString = 'mongodb://localhost:27017/test';
 mongoose.connect(connString, { /*config: { autoIndex: false }*/ });
 
-// MongoDB连接成功后回调，这里仅输出一行日志
+// callback after MongoDB was connected, we just show a log message here
 mongoose.connection.on('connected', function () {
     console.log('Mongoose default connection open to ' + connString);
 });
 
-// MongoDB连接出错后回调，这里仅输出一行日志
+// callback after any error occurred by MongoDB, we just show a log message here
 mongoose.connection.on('error',function (err) {
     console.log('Mongoose default connection error: ' + err);
 });
 
-// MongoDB连接断开后回调，这里仅输出一行日志
+// callback after MongoDB was disconnected, we just show a log message here
 mongoose.connection.on('disconnected', function () {
     console.log('Mongoose default connection disconnected');
 });
 
-// 当前进程退出之前关闭MongoDB连接
+// close MongoDB connection after current server process was terminated
 process.on('SIGINT', function() {
     mongoose.connection.close(function () {
         console.log('Mongoose default connection closed through app termination');
