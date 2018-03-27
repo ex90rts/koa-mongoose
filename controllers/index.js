@@ -6,21 +6,21 @@
 const UserModel = require('../models/user');
 
 exports.index = function *(){
-    //找一个可以雇佣的人
+    // find a guy to hire
     let user = yield UserModel.findJobless();
 
     let links = [
-        "<a href='/user/insert'>新建用户</a>",
-        "<a href='/user/list'>全部用户</a>",
-        "<a href='/user/editors'>所有编辑</a>",
-        "<a href='/user/editors/Golf'>Golf用户</a>",
-        "<a href='/user/editors/type/sports'>体育杂志用户</a>",
-        "<a href='/user/hired'>已雇佣用户</a>"
+        "<a href='/user/insert'>Create New User</a>",
+        "<a href='/user/list'>All Users</a>",
+        "<a href='/user/editors'>All Editors</a>",
+        "<a href='/user/editors/Golf'>Golf Users</a>",
+        "<a href='/user/editors/type/sports'>Sports Users</a>",
+        "<a href='/user/hired'>Hired User</a>"
     ];
     if (user){
-        links.push("<a href='/user/hire/"+ user.username +"'>雇佣新用户</a>");
+        links.push("<a href='/user/hire/"+ user.username +"'>Hire An User</a>");
     }else{
-        links.push("雇佣新用户(暂时没有无业人员哦，请先访问几次新建用户)");
+        links.push("Hire An User(No unemployed user yet, please visit 'Create New User' page first)");
     }
 
     this.body = links.join("<br />");
