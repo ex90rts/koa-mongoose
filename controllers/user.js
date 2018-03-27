@@ -5,7 +5,7 @@
 
 const UserModel = require('../models/user');
 
-//列出所有用户数据，支持分页
+// List all users data with pagination support
 exports.list = function *(){
     let page = this.query.page || 1;
     let limit = 10;
@@ -13,9 +13,10 @@ exports.list = function *(){
     this.body = yield UserModel.find().skip(skip).limit(limit);
 };
 
-//插入一条新数据，实际应用中应该读取客户端POST数据，本示例仅仅模拟
+// Insert a new user record. We just make some random data here to demo, you should 
+// use POST data from client forms in the real world
 exports.insert = function *(){
-    //下面都是随机造假数据
+    // make dummy random data
     let suffix = Math.round(Math.random()*100);
     let baseNames = ["Sam", "Tom", "Jimmy", "Jack", "Kate", "Emma"];
     let randomIdx = Math.floor(Math.random()*baseNames.length);
@@ -55,7 +56,7 @@ exports.insert = function *(){
     ];
     let magazines = magazinesTrunk.slice(randomIdx, randomIdx+3);
 
-    //插入新数据
+    // new data object to insert
     let doc = {
         username: username,
         password: "dasiwoyebushuo",
@@ -67,12 +68,12 @@ exports.insert = function *(){
     this.body = ret;
 };
 
-//返回所有的编辑数据
+// return all editors data
 exports.editors = function *(){
     this.body = yield UserModel.findByRoles('editor');
 };
 
-//返回指定杂志的所有编辑数据
+// return all editors data of a specific magazine
 exports.magazineEditors = function *(magazine){
     if (!magazine){
         magazine = "Golf";
@@ -80,7 +81,7 @@ exports.magazineEditors = function *(magazine){
     this.body = yield UserModel.findByMagazine(magazine);
 };
 
-//返回指定杂志类型的所有编辑数据
+// return all editors data of a specific type
 exports.typeEditors = function *(type){
     if (!type){
         type = "business";
@@ -88,14 +89,15 @@ exports.typeEditors = function *(type){
     this.body = yield UserModel.findByMagazineType(type);
 };
 
-//查找所有被雇佣的用户（有杂志数据的，身份可能是编辑或作者）
-//增加一个editor属性，当身份是编辑时为true
+// return all hired users (which has magazine data, could be an editor or an author)
+// add an new property for user object: editor, should be true while the user is an editor
 exports.hired = function *(){
     let users = yield UserModel.find({"magazines.0":{$exists: true}});
 
     let ret = [];
     users.forEach((doc)=>{
-        //需要使用toObject方法先转换成普通对象，否则增加的editor属性是无法返回的
+        // need to convert the model object to literal object by toObject function,
+        // otherwise the new property 'editor' won't be added in the final response
         let item = doc.toObject();
         item.editor = doc.isEditor();
         ret.push(item);
@@ -109,18 +111,21 @@ exports.hired = function *(){
     this.body = ret;
 };
 
-//雇佣一个用户，传入用户名（也可以使用ID，但是我们用户名有唯一索引，因此也OK）
-//同时需要接收POST的杂志名称和角色，这里为了演示，直接使用默认值
+// hire an user, pass in the username field as the param (while you also can use ID 
+// field, we just need a unique identifier here)
+// we also need to read magazine name and role from POST data of client side, we just
+// use hardcode value here for demo
 exports.hire = function *(username){
-    //const bodyParser = require("co-body");
-    //let postData = yield bodyParser(this.request);
-    let postData = {};//真实环境请将route改成post类型，并使用上面一行代码
+    // const bodyParser = require("co-body");
+    // let postData = yield bodyParser(this.request);
+    let postData = {};// plz change you route to POST type and use code above in real project
     let magazine = postData.magazine || "Golf";
     let role = postData.role || "author";
 
-    //杂志类型应该到相应的杂志collection中查询，这里模拟
-    //let magazineDoc = yield MagazineModel.findByName(magazine);
-    //let magazineType = magazineDoc.type;
+    // the magazine type should query from collection in real project by using the following code
+    
+    // let magazineDoc = yield MagazineModel.findByName(magazine);
+    // let magazineType = magazineDoc.type;
     let magazineType = "sports";
 
     let user = yield UserModel.findByUsername(username);
@@ -129,13 +134,14 @@ exports.hire = function *(username){
             user.roles.push("author");
         }
 
-        //判断用户是否已经关联该杂志的动作省略
+        // you might need to check if this user already connected this magazine in the real project
         user.magazines.push({
             name: magazine,
             type: magazineType
         });
 
-        //可以检查一下user.updated自动是否更新成功了哦
+        // now you can check if user.updated field in database was updated automatically since we
+        // used the middleware around https://github.com/ex90rts/koa-mongoose/blob/english/models/user.js#L31
         this.body = yield user.save();
     }else{
         this.body = {error:"1001", msg:`User <$username> not exist`};
