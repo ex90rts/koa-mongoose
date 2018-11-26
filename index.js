@@ -30,7 +30,7 @@ app.use(route.get('/user/hired', userController.hired));
 app.use(route.get('/user/hire/:username', userController.hire));
 
 // 启动服务，监听3000端口
-app.listen(3000, ()=>{console.log('Server started, please visit: http://127.0.0.1:6000');});
+app.listen(3000, ()=>{console.log('Server started, please visit: http://127.0.0.1:3000');});
 
 // 以下MongoDB连接相关代码页可以独立出去，这里偷懒了
 // 连接MongoDB, 在生产环境应该禁用autoIndex，因为会造成性能问题
