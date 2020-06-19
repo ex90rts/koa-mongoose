@@ -23,6 +23,6 @@
   "dependencies": {
     "koa": "^1.2.0",
     "koa-route": "^2.4.2",
-    "mongoose": "^4.4.19"
+    "mongoose": "^5.9.19"
   }
 }
